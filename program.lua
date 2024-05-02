@@ -41,10 +41,13 @@ CON_COMMANDS = { -- List of terminal commands
             consoleEcho = false
         end
     end,
-    loadstartingfile = function (CON_INPUT)
+    lsf = function (CON_INPUT)
         local maindisk = getComponents("disk")[1]
         local filedata = maindisk.readFile("main.lua")
         loadstring(filedata)()
+    end,
+    any = function (CON_INPUT)
+        CON_OUTPUT(COLORS.RED.."Bad Command Or File Name")
     end
 }
 
@@ -69,12 +72,16 @@ function LoadDisks() -- Used to load all disks, can also be used to "refresh" di
 end
 
 local function parseCommand(CON_INPUT) -- Parse command after it is input
+    local ranCommand = false
     for command, commanddata in pairs(CON_COMMANDS) do
-        if starts_with(CON_INPUT.." ",command) then
+        if starts_with(CON_INPUT,command.." ") then
             commanddata(CON_INPUT)
-        elseif command == "any" then
-            commanddata(CON_INPUT)
+            ranCommand = true
+            break
         end
+    end
+    if ranCommand == false then
+        CON_COMMANDS.any(CON_INPUT)
     end
 end
 
@@ -85,10 +92,9 @@ local function checkBootFile() -- Check for boot file at boot
         loadstring(filedata)()
     end
 end
------------------------------------
---- MAIN CODE
 
-
+----- MAIN CODE -----
+checkBootFile()
 -- Initialize Terminal 
 Terminal.clear()
 Terminal.write("#ffff00AtlasOS v1.0".. LINE_END)
