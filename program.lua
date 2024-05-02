@@ -23,6 +23,9 @@ end
 ----- Initialisation -----
 Terminal = getComponents("terminal")[1]
 local consoleEcho = true
+ReadyPrompt = "#ffffffReady."
+BootPrompt = "#ffff00AtlasOS v1.0"
+
 
 ----- Functions / Globals -----
 function CON_OUTPUT(data) -- Global to output to terminal
@@ -47,7 +50,7 @@ CON_COMMANDS = { -- List of terminal commands
         loadstring(filedata)()
     end,
     any = function (CON_INPUT)
-        CON_OUTPUT(COLORS.RED.."Bad Command Or File Name")
+        CON_OUTPUT(COLORS.RED.."Bad Command")
     end
 }
 
@@ -74,7 +77,7 @@ end
 local function parseCommand(CON_INPUT) -- Parse command after it is input
     local ranCommand = false
     for command, commanddata in pairs(CON_COMMANDS) do
-        if starts_with(CON_INPUT,command.." ") then
+        if starts_with(CON_INPUT.." ",command.." ") then
             commanddata(CON_INPUT)
             ranCommand = true
             break
@@ -90,6 +93,9 @@ local function checkBootFile() -- Check for boot file at boot
     if maindisk.hasFile("boot.lua") then
         local filedata = maindisk.readFile("boot.lua")
         loadstring(filedata)()
+    elseif maindisk.hasFile("autoexec.lua") then
+        local filedata = maindisk.readFile("autoexec.lua")
+        loadstring(filedata)()
     end
 end
 
@@ -97,8 +103,8 @@ end
 checkBootFile()
 -- Initialize Terminal 
 Terminal.clear()
-Terminal.write("#ffff00AtlasOS v1.0".. LINE_END)
-Terminal.write("#ffffffReady."..LINE_END)
+Terminal.write(BootPrompt.. LINE_END)
+Terminal.write(ReadyPrompt..LINE_END)
 
 function callback_loop()
     CON_INPUT = Terminal.read()
