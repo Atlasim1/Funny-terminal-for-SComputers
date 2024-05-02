@@ -9,8 +9,17 @@ LoadDisks()
 CurrentDisk = "Disk1"
 
 local newCommands = {
-    testfilecommands = function (CON_INPUT)
-        CON_OUTPUT("It Works!")
+    installfilecommands = function (CON_INPUT)
+        setData(getData()..[[
+
+            Data.AUTOEXEC.fileplugin = function ()
+                local maindisk = getComponents("disk")[1]
+                local filedata = maindisk.readFile("main.lua")
+                loadstring(filedata)()
+            end
+
+        ]]
+    )
     end,
     selectdisk = function (CON_INPUT)
         local args = string.gsub(CON_INPUT, "selectdisk ","")
@@ -103,6 +112,24 @@ local newCommands = {
             CON_OUTPUT(colors.RED.."Bad File Name")
         end
     end,
+    newfile = function (CON_INPUT)
+        local args = string.gsub(CON_INPUT, "newfile ","")
+        if not _G[CurrentDisk].hasFile(args) then
+            _G[CurrentDisk].createFile(args)
+            CON_OUTPUT("Created File "..args)
+        else
+            CON_OUTPUT(COLORS.RED.."File already exists")
+        end
+    end,
+    run = function (CON_INPUT)
+        local args = string.gsub(CON_INPUT, "run ","")
+        if _G[CurrentDisk].hasFile(args) then
+            local filedata = _G[CurrentDisk].readFile(args)
+            loadstring(filedata)()
+        else
+            CON_OUTPUT(COLORS.RED.."Bad File Name")
+        end
+    end
 }
 
 -- Append new commands

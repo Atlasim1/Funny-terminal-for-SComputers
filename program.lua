@@ -16,6 +16,14 @@ COLORS = {
 
 LINE_END = string.char(13)
 
+local function sleep(ticks)
+    local currentTime = 0
+    local newTime = getUptime() + ticks
+    while currentTime < newTime do
+        currentTime = getUptime()
+    end
+end
+
 local function starts_with(str, start)
     return str:sub(1, #start) == start
 end
@@ -25,7 +33,7 @@ Terminal = getComponents("terminal")[1]
 local consoleEcho = true
 ReadyPrompt = "#ffffffReady."
 BootPrompt = "#ffff00AtlasOS v1.0"
-
+Data = {AUTOEXEC = {}, SETTINGS = {}}
 
 ----- Functions / Globals -----
 function CON_OUTPUT(data) -- Global to output to terminal
@@ -59,11 +67,9 @@ function callback_error(err) -- Error Handling
 end
 ---@diagnostic disable-next-line: lowercase-global
 function onError(err) -- Error Handling
-    if err == "NO_AVAILABLE_DISK" then
-        Terminal.write(COLORS.RED.."FATAL : No bootable medium found\nYou can fix this by connecting a bootable storage medium\nError Code : "..err..LINE_END)
-    end
-    Terminal.write(COLORS.ORANGE.."Lua Error : "..err..LINE_END)
-    return
+    Terminal.write(COLORS.ORANGE.."Lua Error : "..err..LINE_END.."Computer will restart in 15 seconds")
+    sleep(600)
+    reboot()
 end
 
 function LoadDisks() -- Used to load all disks, can also be used to "refresh" disks
@@ -97,9 +103,17 @@ local function checkBootFile() -- Check for boot file at boot
         local filedata = maindisk.readFile("autoexec.lua")
         loadstring(filedata)()
     end
+---@diagnostic disable-next-line: param-type-mismatch
+    pcall(loadstring(getData())) -- ())()) : is very nice
+    if Data and Data.AUTOEXEC then
+        for k,v in pairs(Data.AUTOEXEC) do
+            Data.AUTOEXEC[k]()
+        end
+    end
 end
 
 ----- MAIN CODE -----
+
 checkBootFile()
 -- Initialize Terminal 
 Terminal.clear()
