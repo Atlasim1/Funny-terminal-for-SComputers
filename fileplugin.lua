@@ -10,15 +10,7 @@ CurrentDisk = "Disk1"
 
 local newCommands = {
     installfilecommands = function (CON_INPUT)
-        setData(getData()..[[
-
-            Data.AUTOEXEC.fileplugin = function ()
-                local maindisk = getComponents("disk")[1]
-                local filedata = maindisk.readFile("main.lua")
-                loadstring(filedata)()
-            end
-
-        ]]
+        setData(getData().."Data.AUTOEXEC.fileplugin = function () \n BootPrompt = BootPrompt..\" +File v1\" local maindisk = getComponents(\"disk\")[1] local filedata = maindisk.readFile(\"main.lua\") loadstring(filedata)() end"
     )
     end,
     selectdisk = function (CON_INPUT)
@@ -129,6 +121,9 @@ local newCommands = {
         else
             CON_OUTPUT(COLORS.RED.."Bad File Name")
         end
+    end,
+    helpfile = function (CON_INPUT)
+        CON_OUTPUT("File Commands help:\ninstallfilecommands : Makes file commands load by default on your computer\nselectdisk <disk>: Select the disk to do operations on \nlistdisks : Lists all available disks\ncd <dir>: Changes Directory to <dir>\ndir [<dir>]: Lists elements of current directory or of <dir>\nmkdir <dir> : Creates a new directory of name <dir>\npwd : Outputs the current working directory\ndel <file> : Deletes file : <file>\nrmdir <dir> : Deletes directory : <dir>\ndiskusage : Outputs the current disk usage\nfilesize <file> : Outputs the size of <file>\noutfile <file> : Outputs the contents of <file>\nnewfile <filename> : Creates a new file of name <filename>\nrun <file> : Runs <file>\nhelpfile : Shows help for File Commands")
     end
 }
 
@@ -136,4 +131,4 @@ local newCommands = {
 for k,v in pairs(newCommands) do
     CON_COMMANDS[k] = v
 end
-CON_OUTPUT("Appended New Commands")
+CON_OUTPUT("Appended New Commands, Type helpfile for help")

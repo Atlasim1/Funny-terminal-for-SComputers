@@ -13,4 +13,8 @@ CON_COMMANDS.keyinput = function (CON_INPUT)
     end
 end
 
+CON_COMMANDS.keyinputinstall = function (CON_INPUT)
+    setData(getData()..'Data.AUTOEXEC.keyinputplugin = function () local maindisk = getComponents("disk")[1] local filedata = maindisk.readFile("keyinputplugin.lua") loadstring(filedata)() end')
+end
+
 CON_OUTPUT("Added Command")

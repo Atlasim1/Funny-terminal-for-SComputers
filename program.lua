@@ -59,6 +59,37 @@ CON_COMMANDS = { -- List of terminal commands
     end,
     any = function (CON_INPUT)
         CON_OUTPUT(COLORS.RED.."Bad Command")
+    end,
+    cleardata = function (CON_INPUT)
+        setData("")
+        CON_OUTPUT("Cleared all userdata")
+    end,
+    outdata = function (CON_INPUT)
+        CON_OUTPUT(getData())
+    end,
+    setdata = function (CON_INPUT)
+        local args = string.gsub(CON_INPUT, "setdata ","")
+        setData(args)
+    end,
+    adddata = function (CON_INPUT)
+        local args = string.gsub(CON_INPUT, "adddata ","")
+        setData(getData().."\n"..args.."\n")
+    end,
+    reboot = function (CON_INPUT)
+        reboot()
+    end,
+    cls = function (CON_INPUT)
+        Terminal.clear()
+    end,
+    help = function (CON_INPUT)
+        CON_OUTPUT("List Of Commands")
+        for k,_ in pairs(CON_COMMANDS) do
+            CON_OUTPUT(k)
+        end
+    end,
+    luarun = function (CON_INPUT)
+        local args = string.gsub(CON_INPUT, "luarun ","")
+        loadstring(args)()
     end
 }
 
