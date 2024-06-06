@@ -1,5 +1,5 @@
 ---@diagnostic disable: deprecated, unused-function -- ignore this
--- AtlasOS v1.0
+-- AtlasOS v1.1
 -- Made to run with scripatble computers
 --[[
 Notes
@@ -32,7 +32,7 @@ end
 Terminal = getComponents("terminal")[1]
 local consoleEcho = true
 ReadyPrompt = "#ffffffReady."
-BootPrompt = "#ffff00AtlasOS v1.0"
+BootPrompt = "#ffff00AtlasOS v1.1"
 Data = {AUTOEXEC = {}, SETTINGS = {}}
 
 ----- Functions / Globals -----
@@ -135,7 +135,7 @@ local function checkBootFile() -- Check for boot file at boot
         loadstring(filedata)()
     end
 ---@diagnostic disable-next-line: param-type-mismatch
-    pcall(loadstring(getData())) -- ())()) : is very nice
+    loadstring(getData())()
     if Data and Data.AUTOEXEC then
         for k,v in pairs(Data.AUTOEXEC) do
             Data.AUTOEXEC[k]()
@@ -158,7 +158,10 @@ function callback_loop()
             Terminal.write(COLORS.GREEN.."> "..CON_INPUT..LINE_END)
         end
         parseCommand(CON_INPUT)
-        Terminal.write("#ffffffReady."..LINE_END)
+        Terminal.write(ReadyPrompt..LINE_END)
+    end
+    if _endtick then
+        Terminal.clear()
     end
 end
 
